@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Submit your R package to CRAN</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ying Li" />
+    <meta name="date" content="2023-04-14" />
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+
+
+name: xaringan-title
+class: center, middle
+background-image: url(img/packagesmall.png)
+background-size: 15%
+background-position: right 20% bottom 3%
+
+&lt;style&gt;
+    h1.small {
+       font-size: 60px;
+}
+    h3.small {
+       font-size: 40px;
+}
+&lt;/style&gt;
+
+&lt;h1 style="color: #43418A;" class = "small"&gt;Submitting your R package to CRAN&lt;/h1&gt;
+
+&lt;!-- &lt;img src="img/rmed-hex.png" alt="Rmed-hex-sticker" width="180" /&gt; --&gt;
+
+&lt;h3 style="color: #43418A;" class = "small"&gt;Ying Li | WCM Computing Club | April 14, 2023&lt;/h3&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+---
+# Step 0: Preparation
+
+In this step, you should have:
+
+--
+
+- An **R package** (including R, man, data, NAMESPACE, DESCRIPTION, etc.)
+
+--
+
+- Start R studio within your **package directory**
+
+--
+
+- A **GitHub repository** of your package (not necessary but Recommend)   
+  + e.g. [rapidphylo](https://github.com/ArindamRoyChoudhury/rapidphylo) by Dr. Arindam RoyChoudhury
+
+&lt;br&gt;
+--
+
+.footnote[See WCM Computing Club Resources: [How to build a package in R](https://wcm-computing-club.github.io/file_slides/2019/201901_Lee_R_Package.pdf) by Dr. Jihui Lee]
+
+---
+
+# Step 1: Read CRAN Policies
+
+.pull-left[
+
+- It's good to read the CRAN policies before submitting your package to confirm that you are in compliance with CRAN policies.
+
+- The link to CRAN policies page:
+https://cran.r-project.org/web/packages/policies.html
+]
+
+
+.pull-right[
+&lt;img class="middle" src="img/CRAN_pronounce_poll.png" /&gt;  
+]
+
+
+---
+# Step 2: Check documentation
+
+Create your package pdf manual: 
+
+```r
+devtools::build_manual(path = "...") 
+```
+
+You can use `path` argument to specify the path in which to produce package manual.
+
+This pdf manual includes information in both DESCRIPTION file and function documentation. So, you can check all documentation in one file.
+
+.footnote[[Example: CRAN page of rapidphylo](https://cran.r-project.org/web/packages/rapidphylo/index.html)]
+
+---
+# Step 2: Check documentation
+
+--
+
+Checklist of DESCRIPTION file:
+
+--
+
+- Correct **email address** of Maintainer
+
+--
+
+- Correct **version number**
+
+--
+
+- Correct URL (a link to GitHub repo of your package if you have)
+
+--
+
+- Correct BugReports (a link to "issues" in the GitHub repo of your package if you have) 
+
+.footnote[[Guide of version number](https://r-pkgs.org/lifecycle.html#sec-lifecycle-release-type)]
+---
+# Step 3: Check package 
+
+--
+
+To submit your package to CRAN, you need to run **R CMD check**. 
+
+R CMD check runs all sorts of checks on the contents of an R package. 
+
+It returns **Warnings**, **Errors** and **Notes** messages. 
+--
+
+- Fix all ERRORs and WARNINGs from R CMD check
+
+--
+
+- Eliminate as many NOTEs as possible
+
+--
+
+## How to perform R CMD check?
+
+---
+# Step 3: Check package
+
+There are several ways to run R CMD check, here are a few recommendations
+
+- Use devtools or rhub to check for CRAN specific requirements. R-hub will send an email with the results to the package maintainer. You can change it using `email` argument.
+
+
+```r
+rhub::check_for_cran(email = 'yil4013@med.cornell.edu')
+devtools::check_rhub()
+```
+
+- Use devtools to build and check your package, using all known best practices
+
+
+```r
+devtools::check()
+```
+
+**Reminder**: The Working Directory should be **within your package directory** 
+
+---
+# Step 3: Check package 
+
+Here are some other simple checks that can help you discover potential errors or warnings.
+
+.pull-left[
+- Check your examples in your manuals
+
+```r
+devtools::run_examples()
+```
+
+- Check spell on text fields
+
+
+```r
+devtools::spell_check()
+```
+
+]
+
+.pull-right[
+- Check package dependencies 
+
+```r
+inteRgrate::check_pkg()
+```
+
+- Check if code adheres to standards
+
+```r
+inteRgrate::check_lintr() 
+```
+
+]
+
+---
+# Step 3: Check package
+
+.pull-left[
+
+- Check that your package is ok on windows. Result will be sent to Maintainer's email. To use other email, set `email = "your email" `
+
+
+```r
+devtools::check_win_devel()
+```
+
+- Check if your description is tidy 
+
+
+
+```r
+inteRgrate::check_tidy_description() 
+```
+
+
+
+]
+
+.pull-right[
+
+- Check that downstream dependencies (i.e. all packages that **list your package** in the `Depends`, `Imports`, `Suggests` or `LinkingTo` fields) continue to work
+
+
+```r
+devtools::revdep_check()
+```
+
+- Make your DESCRIPTION  file tidy
+
+
+```r
+usethis::use_tidy_description() 
+```
+
+]
+
+
+
+---
+# Step 4: Edit cran-comment.md
+
+--
+
+`cran-comments.md` is a file to record comments about a submission, mainly the results from R CMD check and revdep checks. You can explain for notes that can't be eliminated in R CMD check.
+
+--
+
+I prefer generating `cran-comments.md` by hand, but you can also create it using function:
+
+
+```r
+usethis::use_cran_comments()
+```
+
+Note: There will always be one NOTE when you first submit your package. You **can’t** eliminate that NOTE, so just mention in `cran-comments.md` that this is your first submission.
+
+.footnote[[Example: rapidphylo/cran-comments.md](https://github.com/ArindamRoyChoudhury/rapidphylo/blob/main/cran-comments.md)]
+---
+# Step 5: Edit NEWS.md
+
+`NEWS.md` is used to keep track of changes of your package.
+
+You can generate it by hand or using R function: 
+
+```r
+usethis::use_news_md()
+```
+
+You can record any changes to your package, like Bug fixes, New features, and Enhancements. etc.
+
+.footnote[
+[Example: rapidphylo/NEWS.md](https://github.com/ArindamRoyChoudhury/rapidphylo/blob/main/NEWS.md)
+
+[Further reading: Maëlle Salmon](https://blog.r-hub.io/2020/05/08/pkg-news/)]
+
+---
+# Step 6: Submit
+
+--
+
+Option 1: Submit your package via the CRAN's [web form](https://xmpalantir.wu.ac.at/cransubmit/). 
+
+--
+
+Option 2: Submit in R or R studio using R function. (Recommend)
+
+
+```r
+devtools::release() 
+```
+
+➡️ The maintainer will receive an email containing a confirmation link from CRAN within a few minutes.
+
+➡️ Click the link and complete confirmation. 
+
+🎉 **ALL DONE!!**
+
+
+---
+# Step 6: Submit
+
+What happens next: 
+
+- The maintainer will recieve an email showing if your package pass the CRAN team's **auto-check** service. 
+ + If NO, modify your package and submit it again. 
+ 
+ + If YES, a CRAN team member will typically respond to you within 10 working days.
+
+- CRAN will notify you by email once your package is accepted.
+
+---
+# Thank you!
+
+&lt;br&gt;
+
+Resource:
+
+[R-package-devel mailing list](https://stat.ethz.ch/mailman/listinfo/r-package-devel) by r-package-devel-owner
+
+[Releasing to CRAN](https://r-pkgs.org/release.html) by Hadley Wickham and Jennifer Bryan 
+
+
+[How to write your own R package and publish it on CRAN](https://www.mzes.uni-mannheim.de/socialsciencedatalab/article/r-package/) by MZES Social Science Data Lab 
+
+[Checklist for r package (re-)submissions on cran](https://www.marinedatascience.co/blog/2020/01/09/checklist-for-r-package-re-submissions-on-cran/) by  SASKIA O.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
